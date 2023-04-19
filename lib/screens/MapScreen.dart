@@ -21,7 +21,8 @@ class _MapScreenState extends State<MapScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: const <Widget> [
-            Text("Map Screen edited by shreyash")
+            Text("Map Screen edited by shreyash", textAlign: TextAlign.left,),
+            Text("Map Screen edited by dddd", textAlign: TextAlign.left,)
           ],
         ),
       ),
