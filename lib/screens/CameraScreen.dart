@@ -22,7 +22,7 @@ class _CameraScreenState extends State<CameraScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: const <Widget> [
-            Text("Camera Screen")
+            Text("Camera Screen edited")
           ],
         ),
       ),
