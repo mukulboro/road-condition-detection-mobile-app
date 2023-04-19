@@ -17,6 +17,7 @@ class MainApp extends StatelessWidget {
     bool isUserLoggedIn = true;
     if(isUserLoggedIn) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Road Condition Mapping',
         theme: ThemeData(
           brightness: Brightness.light,
