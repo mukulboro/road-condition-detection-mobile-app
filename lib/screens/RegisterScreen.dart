@@ -12,6 +12,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _enteredName = "";
   String _enteredPassword = "";
   String _enteredConfirmPassword = "";
+  final String _googleLogoURL =
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/706px-Google_%22G%22_Logo.svg.png";
 
   void _handleRegisterPress() {
     const snackBar = SnackBar(
@@ -47,6 +49,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _handleLoginPress() {
     Navigator.pushNamed(context, "/login");
+  }
+
+  void _handleGooglePress() {
+    print("Google");
   }
 
   @override
@@ -177,6 +183,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
+              const SizedBox(
+                width: 300,
+                height: 1,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.white54),
+                ),
+              ),
+              const SizedBox(width: double.infinity, height: 10),
+              GestureDetector(
+                onTap: () {
+                  _handleGooglePress();
+                },
+                child: Image(
+                  image: NetworkImage(_googleLogoURL),
+                  width: 30,
+                ),
+              ),
               const Padding(
                   padding: EdgeInsets.fromLTRB(0, 15, 0, 1),
                   child: Text(
@@ -191,7 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onTap: () {
                   _handleLoginPress();
                 },
-              )
+              ),
             ],
           ),
         ),

@@ -10,6 +10,7 @@ environment:
 
 
 dependencies:
+  path_provider: ^2.0.14
   persistent_bottom_nav_bar: any
   flutter:
     sdk: flutter

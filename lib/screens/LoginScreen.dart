@@ -10,6 +10,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String _enteredUsername = "";
   String _enteredPassword = "";
+  final String _googleLogoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/706px-Google_%22G%22_Logo.svg.png";
+
+  void _handleGooglePress() {
+    print("Google");
+  }
 
   void _handleLoginPress() {
     const snackBar = SnackBar(
@@ -125,6 +130,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontWeight: FontWeight.w300,
                       letterSpacing: 4),
                 ),
+              ),
+            ),
+            const SizedBox(
+              width: 300,
+              height: 1,
+              child: DecoratedBox(
+                decoration: BoxDecoration(color: Colors.white54),
+              ),
+            ),
+            const SizedBox(width: double.infinity, height: 10),
+            GestureDetector(
+              onTap: () {
+                _handleGooglePress();
+              },
+              child: Image(
+                image: NetworkImage(_googleLogoURL),
+                width: 30,
               ),
             ),
             const Padding(

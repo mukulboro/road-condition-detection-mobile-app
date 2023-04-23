@@ -20,12 +20,11 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Road Condition Mapping',
-        theme: ThemeData(
-          brightness: Brightness.light,
-        ),
+        theme: ThemeData(brightness: Brightness.light, useMaterial3: true),
         darkTheme: ThemeData(
-          brightness: Brightness.dark,
-        ),
+            brightness: Brightness.dark,
+            useMaterial3: true,
+            scaffoldBackgroundColor: const Color(0xff2a282d)),
         themeMode: ThemeMode.dark,
         initialRoute: "/welcome",
         routes: {
