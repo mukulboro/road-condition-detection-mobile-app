@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -8,6 +11,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,9 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const <Widget> [
-            Text("Settings Screen")
-          ],
+          children: const <Widget>[Text("Settingss Check Screen")],
         ),
       ),
     );
