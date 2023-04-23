@@ -4,6 +4,8 @@
         android:label="road_condition_mapping"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyAIajdpqtMyw8Gc9h0jCJ166Z3u9LR5_xE"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
