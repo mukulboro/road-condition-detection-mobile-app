@@ -17,6 +17,9 @@ dependencies:
   geocode: 1.0.1
   geocoding: ^2.0.4
   location: ^4.2.0
+  search_map_place_updated: ^0.0.4
+  http:
+  uuid: ^3.0.5
   persistent_bottom_nav_bar: any
   flutter:
     sdk: flutter

@@ -5,6 +5,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:location/location.dart';
 import 'package:geocode/geocode.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:path/path.dart';
+import 'package:search_map_place_updated/search_map_place_updated.dart';
+import 'package:uuid/uuid.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -15,6 +18,8 @@ class MapScreen extends StatefulWidget {
 
 
 class _MapScreenState extends State<MapScreen> {
+
+
   Future<bool> isLocationAvailable() async {
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
@@ -25,18 +30,17 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   final Completer<GoogleMapController> _controller = Completer();
-  static const CameraPosition _kDhulikhel =  CameraPosition
+  static const CameraPosition _kDhulikhel = CameraPosition
     (target: LatLng(27.6221, 85.54281,),
     zoom: 14.4746,
   );
 
- final List<Marker> _marker = [];
+  final List<Marker> _marker = [];
   final List<Marker> _list = const [
     Marker(
         markerId: MarkerId('1'),
         position: LatLng(27.6221, 85.54281,),
         infoWindow: InfoWindow(
-          // snippet: "Testing",
           title: 'My Home',
         )
     ),
@@ -51,14 +55,15 @@ class _MapScreenState extends State<MapScreen> {
 
   bool _locationAvailability = false;
 
-  _MapScreenState(){
-    isLocationAvailable().then((value) => setState((){
-      _locationAvailability = value;
-    }));
+  _MapScreenState() {
+    isLocationAvailable().then((value) =>
+        setState(() {
+          _locationAvailability = value;
+        }));
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _marker.addAll(_list);
   }
@@ -72,49 +77,68 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
 
-              children: <Widget> [
-                SizedBox(
-                  width: double.infinity,
-                  height: 730,
-                  child: !_locationAvailability ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text("Dey mujji"),
-                        ElevatedButton(child: Text("Get Permission"),
-                        onPressed: () async {
-                          LocationPermission permission;
-                          permission = await Geolocator.requestPermission();
-                          if(permission==LocationPermission.denied || permission==LocationPermission.deniedForever){
-                            setState(() {
-                              _locationAvailability = false;
-                            });
-                          }else{
-                            setState(() {
-                              _locationAvailability = true;
-                            });
-                          }
-                        },)
-                      ],
-                    ),
-                  ) :
-                  GoogleMap(
-                    initialCameraPosition: _kDhulikhel,
-                  //mapType: MapType.satellite,
-                  myLocationEnabled: true,
-                  onMapCreated: (GoogleMapController controller){
-                  _controller.complete(controller);
-                  },
-              ),
+          children: <Widget>[
+            SizedBox(
+              width: double.infinity,
+              height: 730,
+              child: !_locationAvailability ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+
+
+                    Text("Saaala permission de "),
+                    ElevatedButton(child: Text("Get Permission"),
+                      onPressed: () async {
+                        LocationPermission permission;
+                        permission = await Geolocator.requestPermission();
+                        if (permission == LocationPermission.denied ||
+                            permission == LocationPermission.deniedForever) {
+                          setState(() {
+                            _locationAvailability = false;
+                          });
+                        } else {
+                          setState(() {
+                            _locationAvailability = true;
+                          });
+                        }
+                      },)
+                  ],
                 ),
-              ],
-          ),
+              ) :
+
+              GoogleMap(
+
+                initialCameraPosition: _kDhulikhel,
+                //mapType: MapType.satellite,
+                myLocationEnabled: true,
+                markers: Set<Marker>.of(_marker),
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
+              ),
+
+              // child: TextFormField(
+              //   onChanged: (value) {},
+              //   textInputAction: TextInputAction.search,
+              //   decoration: InputDecoration(
+              //     hintText: "Search Your Location",
+              //     prefixIcon: Padding(
+              //       padding: const EdgeInsets.symmetric(vertical: 12),
+              //
+              //     )
+              //   ),
+              // ),
+            ),
+          ],
+        ),
       ),
+
     );
   }
 }
