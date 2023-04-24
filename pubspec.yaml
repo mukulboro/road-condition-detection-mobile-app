@@ -14,6 +14,9 @@ dependencies:
   camera: any
   path: any
   geolocator: ^9.0.2
+  geocode: 1.0.1
+  geocoding: ^2.0.4
+  location: ^4.2.0
   persistent_bottom_nav_bar: any
   flutter:
     sdk: flutter

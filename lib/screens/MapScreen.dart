@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:location/location.dart';
+import 'package:geocode/geocode.dart';
+import 'package:geocoding/geocoding.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -12,34 +15,14 @@ class MapScreen extends StatefulWidget {
 
 
 class _MapScreenState extends State<MapScreen> {
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
+  Future<bool> isLocationAvailable() async {
     LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-
-        return Future.error('Location permissions are denied');
-      }
+      return false;
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    return await Geolocator.getCurrentPosition();
+    return true;
   }
-
 
   final Completer<GoogleMapController> _controller = Completer();
   static const CameraPosition _kDhulikhel =  CameraPosition
@@ -53,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
         markerId: MarkerId('1'),
         position: LatLng(27.6221, 85.54281,),
         infoWindow: InfoWindow(
-          snippet: "Testing",
+          // snippet: "Testing",
           title: 'My Home',
         )
     ),
@@ -66,6 +49,14 @@ class _MapScreenState extends State<MapScreen> {
     ),
   ];
 
+  bool _locationAvailability = false;
+
+  _MapScreenState(){
+    isLocationAvailable().then((value) => setState((){
+      _locationAvailability = value;
+    }));
+  }
+
   @override
   void initState(){
     super.initState();
@@ -73,37 +64,55 @@ class _MapScreenState extends State<MapScreen> {
   }
 
 
-  // TODO: Add Google Maps Widget
   // TODO: Ask for location permission
   // TODO: Send Screen to current location
   // TODO: Plot Dummy Data in Map
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          _determinePosition();
-        },
-        child: const Icon(Icons.my_location),
-      ),
       body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const <Widget> [
-                SizedBox(width: double.infinity, height: 730,
-                child: GoogleMap(initialCameraPosition: _kDhulikhel,
-                  // markers: Set<Marker>.of(_marker),
-                  // onMapCreated: (GoogleMapController controller){
-                  // _controller.complete(controller);
-                  // },
+
+              children: <Widget> [
+                SizedBox(
+                  width: double.infinity,
+                  height: 730,
+                  child: !_locationAvailability ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Dey mujji"),
+                        ElevatedButton(child: Text("Get Permission"),
+                        onPressed: () async {
+                          LocationPermission permission;
+                          permission = await Geolocator.requestPermission();
+                          if(permission==LocationPermission.denied || permission==LocationPermission.deniedForever){
+                            setState(() {
+                              _locationAvailability = false;
+                            });
+                          }else{
+                            setState(() {
+                              _locationAvailability = true;
+                            });
+                          }
+                        },)
+                      ],
+                    ),
+                  ) :
+                  GoogleMap(
+                    initialCameraPosition: _kDhulikhel,
+                  //mapType: MapType.satellite,
+                  myLocationEnabled: true,
+                  onMapCreated: (GoogleMapController controller){
+                  _controller.complete(controller);
+                  },
+              ),
                 ),
-                )
-
-
               ],
-
           ),
       ),
     );
