@@ -19,6 +19,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
 
+  final controllerr = TextEditingController();
 
   Future<bool> isLocationAvailable() async {
     LocationPermission permission;
@@ -47,10 +48,14 @@ class _MapScreenState extends State<MapScreen> {
     Marker(
         markerId: MarkerId('2'),
         position: LatLng(27.6196887444591, 85.54034192606396),
-        infoWindow: InfoWindow(
-            title: 'Kathmandu University'
-        )
+        infoWindow: InfoWindow(title: 'Kathmandu University')
     ),
+    Marker(
+        markerId: MarkerId('3'),
+        position: LatLng(27.616380, 85.540321),
+        infoWindow: InfoWindow(title: 'Boys Home')
+    )
+
   ];
 
   bool _locationAvailability = false;
@@ -77,11 +82,28 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
+        child:
+        Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
 
           children: <Widget>[
+            // TextField(
+            //   controller: controllerr,
+            //   onTap: () async{},
+            //   decoration: InputDecoration(
+            //     icon: Container(
+            //       margin: const EdgeInsets.only(left: 20),
+            //       width: 10,
+            //         height: 10,
+            //       child: const Icon(Icons.location_on, color: Colors.white,),
+            //   ),
+            //     hintText: " Search Location",
+            //     border: InputBorder.none,
+            //     contentPadding: const EdgeInsets.only(left: 8.0, top: 16.0)
+            // ),
+            // ),
+
             SizedBox(
               width: double.infinity,
               height: 730,
@@ -92,8 +114,8 @@ class _MapScreenState extends State<MapScreen> {
                   children: [
 
 
-                    Text("Saaala permission de "),
-                    ElevatedButton(child: Text("Get Permission"),
+                    const Text("Please give permission to use location"),
+                    ElevatedButton(child: const Text("Get Permission"),
                       onPressed: () async {
                         LocationPermission permission;
                         permission = await Geolocator.requestPermission();
@@ -112,33 +134,36 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ) :
 
-              GoogleMap(
+              Stack(
+                children: <Widget>[
+                  GoogleMap(
 
-                initialCameraPosition: _kDhulikhel,
-                //mapType: MapType.satellite,
-                myLocationEnabled: true,
-                markers: Set<Marker>.of(_marker),
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                },
+                    initialCameraPosition: _kDhulikhel,
+                    //mapType: MapType.satellite,
+                    myLocationEnabled: true,
+                    markers: Set<Marker>.of(_marker),
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
+                  ),
+                  // Positioned(
+                  //   top: 100,
+                  //   left: 10,
+                  //   right: 20,
+                  //   child: GestureDetector(
+                  //     onTap: (){},
+                  //     child: Container(
+                  //       height: 50,
+                  //       padding: EdgeInsets.symmetric(horizontal: 5)
+                  //     ),
+                  //   ),
+                  // )
+                ],
               ),
-
-              // child: TextFormField(
-              //   onChanged: (value) {},
-              //   textInputAction: TextInputAction.search,
-              //   decoration: InputDecoration(
-              //     hintText: "Search Your Location",
-              //     prefixIcon: Padding(
-              //       padding: const EdgeInsets.symmetric(vertical: 12),
-              //
-              //     )
-              //   ),
-              // ),
             ),
           ],
         ),
       ),
-
     );
   }
 }
