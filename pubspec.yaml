@@ -18,9 +18,11 @@ dependencies:
   geocode: 1.0.1
   geocoding: ^2.0.4
   location: ^4.2.0
+  search_map_place_updated: ^0.0.4
+  http:
+  uuid: ^3.0.5
   persistent_bottom_nav_bar: any
   flutter_secure_storage: ^8.0.0
-  gallery_saver: ^2.3.2
   flutter:
     sdk: flutter
 
@@ -28,6 +30,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_maps_flutter: ^2.2.5
   auth0_flutter: ^1.1.0
+  latlong2: ^0.8.0
+  flutter_map: ^4.0.0
+  custom_info_window: ^1.0.1
 
 dev_dependencies:
   flutter_test:
