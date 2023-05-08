@@ -1,13 +1,18 @@
 import 'dart:async';
+import 'dart:collection';
+import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:location/location.dart';
+import 'package:location/location.dart';
 import 'package:geocode/geocode.dart';
-import 'package:geocoding/geocoding.dart';
+//import 'package:geocoding/geocoding.dart';
+import 'package:location/location.dart';
 import 'package:path/path.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:uuid/uuid.dart';
+import 'package:custom_info_window/custom_info_window.dart';
+
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -19,7 +24,14 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
 
-  final controllerr = TextEditingController();
+Completer<GoogleMapController> _controller = Completer();
+List<Marker> markers = [];
+int id = 1;
+Set<Polyline> _polylines = Set<Polyline>();
+List<LatLng> polylineCoordinates = [];
+
+CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
+  bool isOpen = false;
 
   Future<bool> isLocationAvailable() async {
     LocationPermission permission;
@@ -30,34 +42,11 @@ class _MapScreenState extends State<MapScreen> {
     return true;
   }
 
-  final Completer<GoogleMapController> _controller = Completer();
+  // final Completer<GoogleMapController> _controller = Completer();
   static const CameraPosition _kDhulikhel = CameraPosition
     (target: LatLng(27.6221, 85.54281,),
     zoom: 14.4746,
   );
-
-  final List<Marker> _marker = [];
-  final List<Marker> _list = const [
-    Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(27.6221, 85.54281,),
-        infoWindow: InfoWindow(
-          title: 'My Home',
-        )
-    ),
-    Marker(
-        markerId: MarkerId('2'),
-        position: LatLng(27.6196887444591, 85.54034192606396),
-        infoWindow: InfoWindow(title: 'Kathmandu University')
-    ),
-    Marker(
-        markerId: MarkerId('3'),
-        position: LatLng(27.616380, 85.540321),
-        infoWindow: InfoWindow(title: 'Boys Home')
-    )
-
-  ];
-
   bool _locationAvailability = false;
 
   _MapScreenState() {
@@ -70,100 +59,122 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _marker.addAll(_list);
   }
 
-
-  // TODO: Ask for location permission
-  // TODO: Send Screen to current location
-  // TODO: Plot Dummy Data in Map
 
   @override
   Widget build(BuildContext context) {
+    void markerOnTap() {
+      setState(() {
+        isOpen = !isOpen;
+      });
+    }
+
+    final List<Marker> _marker = <Marker>[];
+    final List<Marker> _list = [
+      Marker(
+          markerId: const MarkerId('2'),
+          position: const LatLng(27.6196887444591, 85.54034192606396),
+          onTap: () {
+            markerOnTap();
+          }
+      ),
+      Marker(
+        markerId: const MarkerId('3'),
+        position: const LatLng(27.616380, 85.540321),
+        onTap: () {
+          // print('Taped');
+          markerOnTap();
+        },
+      ),
+    ];
+
+
+    _list.add(Marker(
+        markerId: const MarkerId('1'),
+        position: const LatLng(27.6221, 85.54281,),
+        onTap: () {
+          // print(LatLng(27.6221, 85.54281,),);
+          markerOnTap();
+        }
+    ),);
+
+    _marker.addAll(_list);
+
     return Scaffold(
-      body: Center(
-        child:
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+      floatingActionButton: FloatingActionButton(
+        onPressed: ()async{
 
-          children: <Widget>[
-            // TextField(
-            //   controller: controllerr,
-            //   onTap: () async{},
-            //   decoration: InputDecoration(
-            //     icon: Container(
-            //       margin: const EdgeInsets.only(left: 20),
-            //       width: 10,
-            //         height: 10,
-            //       child: const Icon(Icons.location_on, color: Colors.white,),
-            //   ),
-            //     hintText: " Search Location",
-            //     border: InputBorder.none,
-            //     contentPadding: const EdgeInsets.only(left: 8.0, top: 16.0)
-            // ),
-            // ),
+        },
+        child: Icon(Icons.refresh_rounded,),
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child:
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              isOpen ? const SizedBox(
+                width: 200,
+                height: 200,
+                child: Text("randi ko chak"),
+              ) : const Text(""),
 
-            SizedBox(
-              width: double.infinity,
-              height: 730,
-              child: !_locationAvailability ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+              SizedBox(
+                width: double.infinity,
+                height: 730,
+                child: !_locationAvailability ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
 
 
-                    const Text("Please give permission to use location"),
-                    ElevatedButton(child: const Text("Get Permission"),
-                      onPressed: () async {
-                        LocationPermission permission;
-                        permission = await Geolocator.requestPermission();
-                        if (permission == LocationPermission.denied ||
-                            permission == LocationPermission.deniedForever) {
-                          setState(() {
-                            _locationAvailability = false;
-                          });
-                        } else {
-                          setState(() {
-                            _locationAvailability = true;
-                          });
-                        }
-                      },)
+                      const Text("Please give permission to use location"),
+                      ElevatedButton(child: const Text("Get Permission"),
+                        onPressed: () async {
+                          LocationPermission permission;
+                          permission = await Geolocator.requestPermission();
+                          if (permission == LocationPermission.denied ||
+                              permission == LocationPermission.deniedForever) {
+                            setState(() {
+                              _locationAvailability = false;
+                            });
+                          } else {
+                            setState(() {
+                              _locationAvailability = true;
+                            });
+                          }
+                        },)
+                    ],
+                  ),
+                ) :
+
+                Stack(
+                  children: <Widget>[
+                    GoogleMap(
+                      initialCameraPosition: const CameraPosition(
+                          target: LatLng(27.6221, 85.54281),
+                          zoom: 15
+                      ),
+
+                      markers: Set<Marker>.of(_marker),
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+                      },
+                      myLocationEnabled: true,
+                    ),
                   ],
                 ),
-              ) :
-
-              Stack(
-                children: <Widget>[
-                  GoogleMap(
-
-                    initialCameraPosition: _kDhulikhel,
-                    //mapType: MapType.satellite,
-                    myLocationEnabled: true,
-                    markers: Set<Marker>.of(_marker),
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
-                  ),
-                  // Positioned(
-                  //   top: 100,
-                  //   left: 10,
-                  //   right: 20,
-                  //   child: GestureDetector(
-                  //     onTap: (){},
-                  //     child: Container(
-                  //       height: 50,
-                  //       padding: EdgeInsets.symmetric(horizontal: 5)
-                  //     ),
-                  //   ),
-                  // )
-                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+
     );
   }
 }
+
+

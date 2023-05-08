@@ -30,6 +30,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_maps_flutter: ^2.2.5
   auth0_flutter: ^1.1.0
+  latlong2: ^0.8.0
+  flutter_map: ^4.0.0
+  custom_info_window: ^1.0.1
 
 dev_dependencies:
   flutter_test:
