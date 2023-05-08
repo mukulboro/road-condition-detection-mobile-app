@@ -7,13 +7,26 @@ import 'package:road_condition_mapping/screens/UserScreen.dart';
 import 'package:road_condition_mapping/screens/SettingsScreen.dart';
 import 'package:road_condition_mapping/screens/LoginScreen.dart';
 import 'package:road_condition_mapping/screens/WelcomeScreen.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:camera/camera.dart';
 
-void main() {
-  runApp(const MainApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+  runApp(MainApp(camera: firstCamera,));
+  final CameraDescription camera;
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  const MainApp({super.key,
+  required this.camera});
+
+  final CameraDescription camera;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,26 +44,33 @@ class MainApp extends StatelessWidget {
           "/welcome": (context) => const WelcomeScreen(),
           "/login": (context) => const LoginScreen(),
           "/register": (context) => const RegisterScreen(),
-          "/home": (context) => const HomePage()
+          "/home": (context) => HomePage(camera: camera,)
         });
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key,
+  required this.camera});
+
+  final CameraDescription camera;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState(camera:camera);
 }
 
 class _HomePageState extends State<HomePage> {
+   _HomePageState({
+     required this.camera});
+
+  final CameraDescription camera;
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
     return [
       const MapScreen(),
-      const CameraScreen(),
+      CameraScreen(camera: camera),
       const UserScreen(),
       const SettingsScreen()
     ];
