@@ -12,6 +12,7 @@ environment:
 dependencies:
   path_provider: ^2.0.14
   camera: any
+  camerawesome: ^1.3.0
   path: any
   geolocator: ^9.0.2
   geocode: 1.0.1
@@ -19,6 +20,7 @@ dependencies:
   location: ^4.2.0
   persistent_bottom_nav_bar: any
   flutter_secure_storage: ^8.0.0
+  gallery_saver: ^2.3.2
   flutter:
     sdk: flutter
 

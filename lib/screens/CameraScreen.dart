@@ -1,130 +1,139 @@
+//CAMERA SCREEN BY SUYOG GHIMIRE **____**
+
+import 'dart:async';
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({Key? key}) : super(key: key);
+  const CameraScreen({
+    super.key,
+    required this.camera,
+});
+  final CameraDescription camera;
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  late List<CameraDescription> cameras;
-  late CameraController cameraController;
-
-
-  // TODO: Add Camera Widget
-  // TODO: Get user permission for camera
-  // TODO: Get Storage Access
-  // TODO: Click and store image
-
+  late CameraController _controller;
+  late Future<void> _initializeControllerFuture;
   @override
   void initState(){
-    startCamera(0);
-    //getPermissionStatus();
     super.initState();
-  }
-  void startCamera(int direction ) async{
-    cameras = await availableCameras();
-
-    cameraController = CameraController(
-      cameras[direction],
-      ResolutionPreset.high,
-      enableAudio: false,
+    _controller=CameraController(widget.camera,
+      ResolutionPreset.medium,
     );
-
-    await cameraController.initialize().then((value) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {});
-    }).catchError((e){
-      print(e);
-    });
+    _initializeControllerFuture=_controller.initialize();
   }
+
   @override
   void dispose(){
-    cameraController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
-    if (cameraController.value.isInitialized){
-      return Scaffold(
-        body: Stack(
-          children: [
-            CameraPreview(cameraController),
-            // GestureDetector(
-            //     onTap: (){
-            //         setState((){
-            //           direction=direction == 0 ? 1 : 0;
-            //           startCamera(direction);
-            //         });
-            //
-            //   },
-            //     child: button(Icons.flip_camera_android_sharp, Alignment.bottomCenter)
-            // ),
-            GestureDetector(
-              onTap: (){
-                cameraController.takePicture().then((XFile? file) {
-                  if(mounted){
-                    if (file!=null){
-                      print("Picture saved to ${file.path}");
-                    }
-                  }
-                });
-              },
-              child:button(Icons.camera_alt_outlined, Alignment.bottomCenter),
-            ),
+    return Scaffold(
+      floatingActionButtonLocation:FloatingActionButtonLocation.centerFloat ,
+      body: FutureBuilder<void>(
+        future: _initializeControllerFuture,
+        builder: (context,snapshot){
+          if (snapshot.connectionState==ConnectionState.done){
+            return SizedBox(
+              width: MediaQuery. of(context). size. width,
+                height: (16/9)*(MediaQuery. of(context). size. width),
+                child: CameraPreview(_controller));
+          }else{
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+      floatingActionButton: SizedBox(
+        height:100,
+        width:5000,
 
-            // Align(
-            //   alignment:AlignmentDirectional.topCenter,
-            //   child: Text(
-            //     "CAMERA ",
-            //     style: TextStyle(
-            //       fontSize: 20,
-            //       color: Colors.red,
-            //     ),
-            //   ),
-            // )
-
-          ],
-        ),
-
-      );
-    }else{
-      return const SizedBox();
-    }
-  }
-  Widget button(IconData icon , Alignment alignment){
-    return Align(
-      alignment: alignment,
-      child: Container(
-        margin: EdgeInsets.only(
-          left: 10,
-          bottom: 45,
-        ),
-        height: 70,
-        width: 70,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.deepPurple,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                offset: Offset(2,2),
-                blurRadius: 10,
-              )
-            ]
-        ),
-        child: Center(
-          child: Icon(
-            icon,
-            color: Colors.white,
+        child: FloatingActionButton(
+          onPressed: () async{
+            try {
+              await _initializeControllerFuture;
+              final image = await _controller.takePicture();
+              if (!mounted) return;
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      DisplayPictureScreen(
+                        imagePath: image.path,
+                      ),
+                ),
+              );
+            }catch (e){
+              print(e);
+               }
+            },
+          child: const Icon(
+              Icons.camera_alt_outlined,
+              size: 60,
           ),
         ),
       ),
+
+
+
+
     );
   }
 }
+
+class DisplayPictureScreen extends StatelessWidget {
+  final String imagePath;
+
+  const DisplayPictureScreen({super.key, required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('SEND IMAGE TO PROCESS?')),
+      body: Center(
+        child: Column(
+          children: [
+            Image.file(File(imagePath)
+            ),
+        Row(
+            children: <Widget> [
+              Expanded(child: ElevatedButton.icon(
+                  onPressed:(
+                      ){
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.close,
+                    size: 25,
+                  ), label: Text('NO')
+        ),
+              ),
+              Expanded(child: ElevatedButton.icon(
+                onPressed:(){},
+                icon: Icon(
+                Icons.done,
+                size: 25,
+                      ),
+                  label: Text('YES')
+              ),
+              )
+            ],
+        ),
+        ]
+        ),
+
+    )
+    );
+  }
+}
+
+
+
+
