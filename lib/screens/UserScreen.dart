@@ -90,10 +90,10 @@ class _UserScreenState extends State<UserScreen> {
                           color: Colors.pinkAccent),
                     ),
                     GalleryImage(
-                      titleGallery: "Road Condition Images",
+                      titleGallery: "Your uploads",
                       imageUrls: contributions,
-                      numOfShowImages:
-                          contributions.length < 4 ? contributions.length : 4,
+                      numOfhowImages:
+                      contributions.length < 4 ? contributions.length : 4,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
