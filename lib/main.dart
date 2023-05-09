@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _buildScreens() {
     return [
       const MapScreen(),
-      CameraScreen(camera: camera),
+      CameraScreen(camera: camera, credentials: credentials,),
       UserScreen(
         credentials: credentials,
       ),

@@ -4,26 +4,33 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:io' as Io;
 import 'dart:convert';
+import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 import 'package:geocoding/geocoding.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({
     super.key,
     required this.camera,
+    this.credentials
   });
 
+  final Credentials? credentials;
   final CameraDescription camera;
 
   @override
-  State<CameraScreen> createState() => _CameraScreenState();
+  State<CameraScreen> createState() => _CameraScreenState(credentials: credentials);
 }
 
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  final Credentials? credentials;
+
+  _CameraScreenState({this.credentials});
 
 
   @override
@@ -41,7 +48,6 @@ class _CameraScreenState extends State<CameraScreen> {
     _controller.dispose();
     super.dispose();
   }
-
 
 
   @override
@@ -74,6 +80,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 MaterialPageRoute(
                   builder: (context) => DisplayPictureScreen(
                     imagePath: image.path,
+                    credentials: credentials,
                   ),
                 ),
               );
@@ -93,19 +100,21 @@ class _CameraScreenState extends State<CameraScreen> {
 
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
+  final Credentials? credentials;
+  const DisplayPictureScreen({super.key, required this.imagePath, this.credentials});
 
-  const DisplayPictureScreen({super.key, required this.imagePath});
 
   @override
-  State<DisplayPictureScreen> createState() => _DisplayPictureScreenState();
+  State<DisplayPictureScreen> createState() => _DisplayPictureScreenState(credentials: credentials);
 }
 
 class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
+  final Credentials? credentials;
+  _DisplayPictureScreenState({this.credentials});
+
   @override
   Widget build(BuildContext context) {
 
-    String? _currentAddress;
-    Position? _currentPosition;
 
     Future<bool> _handleLocationPermission() async {
       bool serviceEnabled;
@@ -144,6 +153,19 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     }
 
 
+    Future<http.Response> httpCall(double latitude,double longitude,String username, String image_string) {
+      return http.post(
+        Uri.parse('http://192.168.18.13:8000/post'),
+        headers: {"Content-Type":"application/json"},
+        body: json.encode({
+          'longitude': longitude,
+          'latitude': latitude,
+
+          'username': username,
+          'image_string': image_string,
+        }),
+      );
+    }
 
     return FutureBuilder(
       future: getCurrentPosition(),
@@ -152,6 +174,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
           return const Center(child: CircularProgressIndicator());
         }else{
           Position position = snapshot.data;
+
         return Scaffold(
             appBar: AppBar(title: const Text('Send image to process?')),
             body: Center(
@@ -197,16 +220,17 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green),
                             onPressed: () {
-                              print('LOCATION DIYO');
-                              print(position.latitude);
-                              print(position.longitude);
-
                               final bytes = Io.File(widget.imagePath).readAsBytesSync();
-
                               String img64 = base64Encode(bytes);
-                              print(
-                                  'IMAGE HAS BEEN ENCODED TO BASE64');
-                              print(img64);
+                              String userEmail = credentials?.user.email ?? "err";
+                              httpCall(position.longitude, position.latitude, userEmail,img64 );
+
+                              const snackBar = SnackBar(
+                                content: Text('Your Image Has Been Sent to Server'),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              Navigator.pop(context);
+
                             },
                             icon: const Icon(
                               Icons.done,
