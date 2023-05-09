@@ -1,3 +1,4 @@
+import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:road_condition_mapping/screens/MapScreen.dart';
@@ -16,17 +17,16 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
   final firstCamera = cameras.first;
-  runApp(MainApp(camera: firstCamera,));
+  runApp(MainApp(
+    camera: firstCamera,
+  ));
   final CameraDescription camera;
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key,
-  required this.camera});
+  const MainApp({super.key, required this.camera});
 
   final CameraDescription camera;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -41,27 +41,30 @@ class MainApp extends StatelessWidget {
         themeMode: ThemeMode.dark,
         initialRoute: "/welcome",
         routes: {
-          "/welcome": (context) => const WelcomeScreen(),
+          "/welcome": (context) => WelcomeScreen(
+                camera: camera,
+              ),
           "/login": (context) => const LoginScreen(),
           "/register": (context) => const RegisterScreen(),
-          "/home": (context) => HomePage(camera: camera,)
         });
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key,
-  required this.camera});
+  const HomePage({super.key, required this.camera, this.credentials});
 
   final CameraDescription camera;
+  final Credentials? credentials;
 
   @override
-  State<HomePage> createState() => _HomePageState(camera:camera);
+  State<HomePage> createState() =>
+      _HomePageState(camera: camera, credentials: credentials);
 }
 
 class _HomePageState extends State<HomePage> {
-   _HomePageState({
-     required this.camera});
+  _HomePageState({required this.camera, this.credentials});
+
+  final Credentials? credentials;
 
   final CameraDescription camera;
   final PersistentTabController _controller =
@@ -71,8 +74,9 @@ class _HomePageState extends State<HomePage> {
     return [
       const MapScreen(),
       CameraScreen(camera: camera),
-      const UserScreen(),
-      const SettingsScreen()
+      UserScreen(
+        credentials: credentials,
+      ),
     ];
   }
 
@@ -93,12 +97,6 @@ class _HomePageState extends State<HomePage> {
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.person),
         title: ("User"),
-        activeColorPrimary: Colors.white,
-        inactiveColorPrimary: Colors.black45,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.settings),
-        title: ("Settings"),
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.black45,
       ),

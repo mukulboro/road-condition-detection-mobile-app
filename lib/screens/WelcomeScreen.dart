@@ -1,15 +1,23 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:road_condition_mapping/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({required this.camera});
+
+  final CameraDescription camera;
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState(camera: camera);
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  _WelcomeScreenState({required this.camera});
+
+  final CameraDescription camera;
+
   Credentials? _credentials;
   late Auth0 auth0;
   String? token;
@@ -91,16 +99,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     )
                   : ElevatedButton(
                       onPressed: () async {
-                        await storage.write(
-                            key: "loginToken",
-                            value: _credentials?.accessToken);
-                        await storage.write(
-                            key: "refreshToken",
-                            value: _credentials?.refreshToken);
-
-                        await storage.write(
-                            key: "userEmail", value: _credentials?.user.email);
-                        Navigator.pushNamed(context, "/home");
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return HomePage(
+                            camera: camera,
+                            credentials: _credentials,
+                          );
+                        }));
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple),
