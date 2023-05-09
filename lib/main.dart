@@ -20,7 +20,6 @@ Future<void> main() async {
   runApp(MainApp(
     camera: firstCamera,
   ));
-  final CameraDescription camera;
 }
 
 class MainApp extends StatelessWidget {

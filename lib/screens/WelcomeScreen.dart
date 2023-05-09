@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:road_condition_mapping/main.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -47,7 +50,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         }));
   }
 
-  final storage = new FlutterSecureStorage();
+  final storage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
