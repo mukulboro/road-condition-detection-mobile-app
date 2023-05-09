@@ -41,6 +41,9 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   @override
+
+
+
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: httpCall(),
@@ -92,8 +95,7 @@ class _UserScreenState extends State<UserScreen> {
                     GalleryImage(
                       titleGallery: "Your uploads",
                       imageUrls: contributions,
-                      numOfhowImages:
-                      contributions.length < 4 ? contributions.length : 4,
+                      numOfShowImages: contributions.length < 4 ? contributions.length : 4,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
