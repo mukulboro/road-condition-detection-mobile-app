@@ -2,7 +2,8 @@
 
 import 'dart:async';
 import 'dart:io';
-
+import 'dart:io' as Io;
+import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
@@ -116,7 +117,13 @@ class DisplayPictureScreen extends StatelessWidget {
         ),
               ),
               Expanded(child: ElevatedButton.icon(
-                onPressed:(){},
+                onPressed:(){
+                  final bytes = Io.File(imagePath).readAsBytesSync();
+
+                  String img64 = base64Encode(bytes);
+                  print('GALGALIYA CHAKKA YO KURA PAKKA BIGYA KO SATHI LE KHUWAYENA BHAKKA');
+                  print(img64);
+                },
                 icon: Icon(
                 Icons.done,
                 size: 25,
