@@ -82,13 +82,41 @@ class _UserScreenState extends State<UserScreen> {
                       height: 50,
                     ),
                     const Text(
-                      "Your Contributions: ",
+                      "YOUR CONTRIBUTIONS",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 20,
+                          letterSpacing: 2,
+                          color: Colors.pinkAccent),
                     ),
                     GalleryImage(
                       titleGallery: "Your Contributions",
                       imageUrls: contributions,
                       numOfShowImages:
                           contributions.length < 4 ? contributions.length : 4,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Row(
+                          children: const [
+                            Icon(
+                              Icons.circle,
+                              color: Colors.purpleAccent,
+                            ),
+                            Text("Crack")
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Icon(
+                              Icons.circle,
+                              color: Color(0xff0000FF),
+                            ),
+                            Text("Pothole")
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       width: double.infinity,
@@ -107,7 +135,7 @@ class _UserScreenState extends State<UserScreen> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.redAccent),
                         child: const Text(
-                          "Logout and Close",
+                          "Logout",
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                       ),
