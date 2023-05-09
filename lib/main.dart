@@ -5,7 +5,7 @@ import 'package:road_condition_mapping/screens/MapScreen.dart';
 import 'package:road_condition_mapping/screens/CameraScreen.dart';
 import 'package:road_condition_mapping/screens/RegisterScreen.dart';
 import 'package:road_condition_mapping/screens/UserScreen.dart';
-import 'package:road_condition_mapping/screens/SettingsScreen.dart';
+import 'package:road_condition_mapping/screens/InfoScreen.dart';
 import 'package:road_condition_mapping/screens/LoginScreen.dart';
 import 'package:road_condition_mapping/screens/WelcomeScreen.dart';
 import 'dart:async';
@@ -72,10 +72,14 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _buildScreens() {
     return [
       const MapScreen(),
-      CameraScreen(camera: camera, credentials: credentials,),
+      CameraScreen(
+        camera: camera,
+        credentials: credentials,
+      ),
       UserScreen(
         credentials: credentials,
       ),
+      const InfoScreen()
     ];
   }
 
@@ -96,6 +100,12 @@ class _HomePageState extends State<HomePage> {
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.person),
         title: ("User"),
+        activeColorPrimary: Colors.white,
+        inactiveColorPrimary: Colors.black45,
+      ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(Icons.info_outline),
+        title: ("Info"),
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.black45,
       ),
