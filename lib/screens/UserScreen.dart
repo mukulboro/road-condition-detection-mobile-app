@@ -90,7 +90,7 @@ class _UserScreenState extends State<UserScreen> {
                           color: Colors.pinkAccent),
                     ),
                     GalleryImage(
-                      titleGallery: "Your Contributions",
+                      titleGallery: "Road Condition Images",
                       imageUrls: contributions,
                       numOfShowImages:
                           contributions.length < 4 ? contributions.length : 4,
