@@ -9,19 +9,33 @@ class ServerData {
   final double lat;
   final double long;
   final String img;
+  final String user;
+  final String date;
+  final int cracks;
+  final int potholes;
+  final int rating;
 
   const ServerData({
     required this.lat,
     required this.long,
     required this.img,
+    required this.user,
+    required this.date,
+    required this.cracks,
+    required this.potholes,
+    required this.rating,
   });
 
   factory ServerData.fromJson(Map<String, dynamic> json) {
     return ServerData(
-      lat: json['longitude'],
-      long: json['latitude'],
-      img: json['image_name'],
-    );
+        lat: json['longitude'],
+        long: json['latitude'],
+        img: json['image_name'],
+        user: json['posted_by'],
+        date: json['uploaded_date'],
+        cracks: json['no_of_cracks'],
+        potholes: json["no_of_potholes"],
+        rating: json['rating']);
   }
 }
 
@@ -61,8 +75,18 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<ServerData> serverData = [];
+
     void markerOnTap(int index) {
-      _testTitle.value = "$index";
+      ServerData data = serverData[index];
+      String img = data.img;
+      String user = data.user;
+      String date = data.date;
+      int ph = data.potholes;
+      int crk = data.cracks;
+      int rating = data.rating;
+      String codedString = "$img|$user|$date|$ph|$crk";
+      _testTitle.value = codedString;
     }
 
     void openWindow() {
@@ -73,14 +97,26 @@ class _MapScreenState extends State<MapScreen> {
 
     Future<List> httpCall() async {
       List<Marker> markers = [];
-      String baseUrl = "http://192.168.18.13:8000";
+      String baseUrl = "http://20.121.229.217";
       var url = Uri.parse(
           "$baseUrl/nearby_road_coordinates?longitude=27.616380&latitude=85.540321");
       http.Response response = await http.get(url);
       var list = json.decode(response.body);
       for (int i = 0; i < list.length; i++) {
-        ServerData sd = ServerData.fromJson(list[0]);
+        double customMarker = BitmapDescriptor.hueRed;
+        ServerData sd = ServerData.fromJson(list[i]);
+        serverData.add(sd);
+        if (sd.rating == 0) {
+          customMarker = BitmapDescriptor.hueRed;
+        }
+        if (sd.rating == 1) {
+          customMarker = BitmapDescriptor.hueYellow;
+        }
+        if (sd.rating == 2) {
+          customMarker = BitmapDescriptor.hueGreen;
+        }
         Marker newMarker = Marker(
+            icon: BitmapDescriptor.defaultMarkerWithHue(customMarker),
             markerId: MarkerId('$i'),
             position: LatLng(sd.lat, sd.long),
             onTap: () {
@@ -111,21 +147,82 @@ class _MapScreenState extends State<MapScreen> {
                               valueListenable: _testTitle,
                               builder:
                                   (BuildContext context, title, Widget? child) {
+                                List<String> params = title.split("|");
+                                String imgName = params[0];
+                                String userName = params[1];
+                                String date = params[2];
+                                String pothole = params[3];
+                                String crack = params[4];
+                                String imgURL =
+                                    "http://20.121.229.217/view-image/$imgName";
+
                                 return SizedBox(
                                   width: 200,
-                                  height: 200,
+                                  height: 600,
                                   child: Center(
                                       child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(title),
-                                      IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              isOpen = false;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.cancel))
+                                      Image.network(
+                                        imgURL,
+                                        height: 300,
+                                      ),
+                                      const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.circle,
+                                                color: Colors.purpleAccent,
+                                              ),
+                                              Text(
+                                                "Crack",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.circle,
+                                                color: Color(0xff0000FF),
+                                              ),
+                                              Text(
+                                                "Pothole",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Text("Contributed By:"),
+                                          Text(userName),
+                                          Text("Contributed On: $date"),
+                                          Text("Number of Potholes: $pothole"),
+                                          Text("Number of Cracks: $crack"),
+                                        ],
+                                      ),
+                                      FloatingActionButton(
+                                        backgroundColor: Colors.red,
+                                        child: const Icon(Icons.close),
+                                        onPressed: () {
+                                          setState(() {
+                                            isOpen = false;
+                                          });
+                                        },
+                                      )
                                     ],
                                   )),
                                 );
@@ -170,6 +267,7 @@ class _MapScreenState extends State<MapScreen> {
                               : Stack(
                                   children: <Widget>[
                                     GoogleMap(
+                                      mapType: MapType.hybrid,
                                       initialCameraPosition:
                                           const CameraPosition(
                                               target: LatLng(27.6221, 85.54281),

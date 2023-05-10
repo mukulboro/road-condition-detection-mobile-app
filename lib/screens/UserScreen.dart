@@ -19,7 +19,7 @@ class _UserScreenState extends State<UserScreen> {
 
   Future<List> httpCall() async {
     String _email = credentials?.user.email ?? "";
-    String _url = "http://192.168.18.13:8000";
+    String _url = "http://20.121.229.217";
     var url = Uri.parse("$_url/get_user_contibutions?username=$_email");
     var response = await http.get(url);
     var list = json.decode(response.body);
@@ -88,12 +88,16 @@ class _UserScreenState extends State<UserScreen> {
                           letterSpacing: 2,
                           color: Colors.pinkAccent),
                     ),
-                    GalleryImage(
-                      titleGallery: "Your uploads",
-                      imageUrls: contributions,
-                      numOfShowImages:
-                          contributions.length < 4 ? contributions.length : 4,
-                    ),
+                    contributions[0] != "zero.jpg"
+                        ? GalleryImage(
+                            titleGallery: "Your uploads",
+                            imageUrls: contributions,
+                            numOfShowImages: contributions.length < 4
+                                ? contributions.length
+                                : 4,
+                          )
+                        : const Text(
+                            "You have not made any contributions yet."),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
