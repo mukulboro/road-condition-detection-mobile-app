@@ -22,7 +22,8 @@ class CameraScreen extends StatefulWidget {
   final CameraDescription camera;
 
   @override
-  State<CameraScreen> createState() => _CameraScreenState(credentials: credentials);
+  State<CameraScreen> createState() =>
+      _CameraScreenState(credentials: credentials);
 }
 
 class _CameraScreenState extends State<CameraScreen> {
@@ -59,8 +60,14 @@ class _CameraScreenState extends State<CameraScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: (16 / 9) * (MediaQuery.of(context).size.width),
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                height: (16 / 9) * (MediaQuery
+                    .of(context)
+                    .size
+                    .width),
                 child: CameraPreview(_controller));
           } else {
             return const Center(child: CircularProgressIndicator());
@@ -78,10 +85,11 @@ class _CameraScreenState extends State<CameraScreen> {
               if (!mounted) return;
               await Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => DisplayPictureScreen(
-                    imagePath: image.path,
-                    credentials: credentials,
-                  ),
+                  builder: (context) =>
+                      DisplayPictureScreen(
+                        imagePath: image.path,
+                        credentials: credentials,
+                      ),
                 ),
               );
             } catch (e) {
@@ -101,21 +109,23 @@ class _CameraScreenState extends State<CameraScreen> {
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
   final Credentials? credentials;
-  const DisplayPictureScreen({super.key, required this.imagePath, this.credentials});
+
+  const DisplayPictureScreen(
+      {super.key, required this.imagePath, this.credentials});
 
 
   @override
-  State<DisplayPictureScreen> createState() => _DisplayPictureScreenState(credentials: credentials);
+  State<DisplayPictureScreen> createState() =>
+      _DisplayPictureScreenState(credentials: credentials);
 }
 
 class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   final Credentials? credentials;
+
   _DisplayPictureScreenState({this.credentials});
 
   @override
   Widget build(BuildContext context) {
-
-
     Future<bool> _handleLocationPermission() async {
       bool serviceEnabled;
       LocationPermission permission;
@@ -148,15 +158,18 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
     Future<Position> getCurrentPosition() async {
       final hasPermission = await _handleLocationPermission();
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       return position;
     }
 
 
-    Future<http.Response> httpCall(double latitude,double longitude,String username, String image_string) {
+    Future<http.Response> httpCall(double latitude, double longitude,
+        String username, String image_string) {
       return http.post(
-        Uri.parse('http://192.168.18.13:8000/post'),
-        headers: {"Content-Type":"application/json"},
+
+        Uri.parse('http://20.121.229.217/post'),
+        headers: {"Content-Type": "application/json"},
         body: json.encode({
           'longitude': longitude,
           'latitude': latitude,
@@ -168,88 +181,94 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     }
 
     return FutureBuilder(
-      future: getCurrentPosition(),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if(!snapshot.hasData){
-          return const Center(child: CircularProgressIndicator());
-        }else{
-          Position position = snapshot.data;
+        future: getCurrentPosition(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            Position position = snapshot.data;
 
-        return Scaffold(
-            appBar: AppBar(title: const Text('Send image to process?')),
-            body: Center(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.file(File(widget.imagePath)),
-                    const SizedBox(
-                      width: double.infinity,
-                      height: 30,
-                    ),
-                    Row(
-                      children: <Widget>[
+            return Scaffold(
+                appBar: AppBar(title: const Text('Send image to process?')),
+                body: Center(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.file(File(widget.imagePath)),
                         const SizedBox(
-                          height: 10,
-                          width: 20,
+                          width: double.infinity,
+                          height: 30,
                         ),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.pinkAccent,
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(
-                                Icons.close,
-                                size: 25,
-                                color: Colors.white,
-                              ),
-                              label: const Text(
-                                'No Thanks',
-                                style: TextStyle(color: Colors.white),
-                              )),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                          width: 20,
-                        ),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green),
-                            onPressed: () {
-                              final bytes = Io.File(widget.imagePath).readAsBytesSync();
-                              String img64 = base64Encode(bytes);
-                              String userEmail = credentials?.user.email ?? "err";
-                              httpCall(position.longitude, position.latitude, userEmail,img64 );
-
-                              const snackBar = SnackBar(
-                                content: Text('Your Image Has Been Sent to Server'),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                              Navigator.pop(context);
-
-                            },
-                            icon: const Icon(
-                              Icons.done,
-                              size: 25,
-                              color: Colors.white,
+                        Row(
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 10,
+                              width: 20,
                             ),
-                            label: const Text('Yes Sure',
-                                style: TextStyle(color: Colors.white)),
-                          ),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.pinkAccent,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(
+                                    Icons.close,
+                                    size: 25,
+                                    color: Colors.white,
+                                  ),
+                                  label: const Text(
+                                    'No Thanks',
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                              width: 20,
+                            ),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green),
+                                onPressed: () {
+                                  final bytes = Io.File(widget.imagePath)
+                                      .readAsBytesSync();
+                                  String img64 = base64Encode(bytes);
+                                  String userEmail = credentials?.user.email ??
+                                      "err";
+                                  httpCall(
+                                      position.longitude, position.latitude,
+                                      userEmail, img64);
+
+                                  const snackBar = SnackBar(
+                                    content: Text(
+                                        'Your Image Has Been Sent to Server'),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      snackBar);
+                                  Navigator.pop(context);
+                                },
+                                icon: const Icon(
+                                  Icons.done,
+                                  size: 25,
+                                  color: Colors.white,
+                                ),
+                                label: const Text('Yes Sure',
+                                    style: TextStyle(color: Colors.white)),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                              width: 20,
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 10,
-                          width: 20,
-                        ),
-                      ],
-                    ),
-                  ]),
-            ));}
-      }
+                      ]),
+                ));
+          }
+        }
     );
   }
 }
