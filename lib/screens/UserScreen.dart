@@ -41,9 +41,6 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   @override
-
-
-
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: httpCall(),
@@ -52,7 +49,6 @@ class _UserScreenState extends State<UserScreen> {
             return const Center(child: CircularProgressIndicator());
           } else {
             List<String> contributions = List<String>.from(snapshot.data!);
-            print(contributions[0]);
             return Scaffold(
               body: Center(
                 child: Column(
@@ -95,13 +91,14 @@ class _UserScreenState extends State<UserScreen> {
                     GalleryImage(
                       titleGallery: "Your uploads",
                       imageUrls: contributions,
-                      numOfShowImages: contributions.length < 4 ? contributions.length : 4,
+                      numOfShowImages:
+                          contributions.length < 4 ? contributions.length : 4,
                     ),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Row(
-                          children: const [
+                          children: [
                             Icon(
                               Icons.circle,
                               color: Colors.purpleAccent,
@@ -110,7 +107,7 @@ class _UserScreenState extends State<UserScreen> {
                           ],
                         ),
                         Row(
-                          children: const [
+                          children: [
                             Icon(
                               Icons.circle,
                               color: Color(0xff0000FF),
